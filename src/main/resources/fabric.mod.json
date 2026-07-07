@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "pooltoys",
+	"version": "${version}",
+	"name": "pooltoys",
+	"description": "Inflatable Pooltoys for Minecraft :3",
+	"authors": [
+		"memopemo"
+	],
+	"contact": {
+		"homepage": "https://memopemo.carrd.co",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "All Rights Reserved",
+	"icon": "assets/pooltoys/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"memopemo.pooltoys.Pooltoys"
+		],
+		"client": [
+			"memopemo.pooltoys.client.PooltoysClient"
+		]
+	},
+	"mixins": [
+		"pooltoys.mixins.json",
+		{
+			"config": "pooltoys.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.2",
+		"minecraft": "~1.21.10",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

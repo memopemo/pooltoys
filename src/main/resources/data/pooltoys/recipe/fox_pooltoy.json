@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#G#",
+    "###"
+  ],
+  "key": {
+    "#": "minecraft:oak_planks",
+    "G": "minecraft:glass_pane"
+  },
+  "result": {
+    "id": "pooltoys:fox_pooltoy",
+    "count": 1
+  }
+}

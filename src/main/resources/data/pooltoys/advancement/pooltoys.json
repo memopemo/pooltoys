@@ -1,0 +1,27 @@
+{
+  "criteria": {
+    "obtained_glass_panes": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:glass_pane"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "recipes": [
+      "pooltoys:dragon_pooltoy",
+      "pooltoys:flamingo_pooltoy",
+      "pooltoys:fox_pooltoy",
+      "pooltoys:gator_pooltoy",
+      "pooltoys:orca_pooltoy",
+      "pooltoys:otter_pooltoy",
+      "pooltoys:shark_pooltoy",
+      "pooltoys:tanuki_pooltoy",
+      "pooltoys:wolf_pooltoy"
+    ]
+  }
+}

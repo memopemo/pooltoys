@@ -1,0 +1,10 @@
+{
+    "bounce":{
+        "subtitle:":"sound.pooltoys.bounce",
+        "sounds":[
+            "pooltoys:bounce1",
+            "pooltoys:bounce2",
+            "pooltoys:bounce3"
+        ]
+    }
+}
