@@ -18,10 +18,11 @@ They don't mind!
 
 ## Credits
 
-- Boba and Chili designs belong to MorshMarter and [PuffyPaws](https://bsky.app/profile/puffypaws.bsky.social)
+- Boba and Chili designs belong to MorshMarter and [PuffyPaws](http://puffypa.ws)
 - Matcha and Taro designs belong to MorshMarter
 - Raccoon model and base coloring by [MaxRanuki](https://bsky.app/profile/maxtanuki.bsky.social)
 - Modeling, Texturing, Programming, and Sound Design by [memopemo](https://memopemo.carrd.co) (me)
+- Jazz design belongs to [JazzOtter](https://bsky.app/profile/jazz.otter-space.com)
 
 ## Project Setup
 
