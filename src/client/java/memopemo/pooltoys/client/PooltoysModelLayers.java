@@ -3,7 +3,7 @@ package memopemo.pooltoys.client;
 import memopemo.pooltoys.Pooltoys;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class PooltoysModelLayers {
 	
@@ -21,7 +21,7 @@ public class PooltoysModelLayers {
 	//Add by copying and renaming like so
 
 	private static ModelLayerLocation createMain(String name) {
-		return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, name), "main");
+		return new ModelLayerLocation(Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, name), "main");
 	}
 
 	public static void registerModelLayers() {

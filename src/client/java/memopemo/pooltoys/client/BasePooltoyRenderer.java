@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 //if creating a new one just rename everything "dragon" in the new file to your new entity.
@@ -27,7 +27,7 @@ public class BasePooltoyRenderer<T extends Pooltoy> extends EntityRenderer<T, Po
         this.shadowRadius = 1f;
         this.shadowStrength = 0.7f;
     }
-    public void submit(PooltoyRenderState ptRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, ResourceLocation TEXTURE) {
+    public void submit(PooltoyRenderState ptRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, Identifier TEXTURE) {
         if(model == null) return;
         poseStack.pushPose();
 

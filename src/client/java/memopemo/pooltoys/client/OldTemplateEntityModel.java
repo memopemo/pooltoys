@@ -2,14 +2,14 @@
 // No longer extending AbstractBoat
 package memopemo.pooltoys.client;
 
-import net.minecraft.client.model.AbstractBoatModel;
+import net.minecraft.client.model.object.boat.AbstractBoatModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.entity.AbstractBoatRenderer;
+import net.minecraft.client.renderer.entity.BoatRenderer;
 
 public class OldTemplateEntityModel extends AbstractBoatModel {
     //paste the model part definitions here like this one:

@@ -6,14 +6,14 @@ import memopemo.pooltoys.Pooltoys;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.state.CameraRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class TanukiRenderer extends BasePooltoyRenderer<Tanuki>{
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_boba.png");
-    private static final ResourceLocation RED = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_red_panda.png");
-    private static final ResourceLocation GREEN = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_matcha.png");
-    private static final ResourceLocation PURPLE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_taro.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_boba.png");
+    private static final Identifier RED = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_red_panda.png");
+    private static final Identifier GREEN = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_matcha.png");
+    private static final Identifier PURPLE = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_taro.png");
 
     protected TanukiRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -22,7 +22,7 @@ public class TanukiRenderer extends BasePooltoyRenderer<Tanuki>{
     }
 
     public void submit(PooltoyRenderState ptRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState) {
-        ResourceLocation customTexture = TEXTURE;
+        Identifier customTexture = TEXTURE;
         switch (ptRenderState.hasSpecialName) {
             case 0:
                 customTexture = RED;

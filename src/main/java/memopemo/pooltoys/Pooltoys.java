@@ -3,7 +3,7 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.core.Registry;
@@ -117,10 +117,10 @@ public class Pooltoys implements ModInitializer {
 
 
     private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
-		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, name));
+		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, name));
 		return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
 	}
-	public static final SoundEvent BOUNCE = Registry.register(BuiltInRegistries.SOUND_EVENT, ResourceLocation.fromNamespaceAndPath(MOD_ID, "bounce"), SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, "bounce")));
+	public static final SoundEvent BOUNCE = Registry.register(BuiltInRegistries.SOUND_EVENT, Identifier.fromNamespaceAndPath(MOD_ID, "bounce"), SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(MOD_ID, "bounce")));
 
 	@Override
 	public void onInitialize() {

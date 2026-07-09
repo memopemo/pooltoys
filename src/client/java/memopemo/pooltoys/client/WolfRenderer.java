@@ -7,12 +7,12 @@ import memopemo.pooltoys.Pooltoys;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.state.CameraRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class WolfRenderer extends BasePooltoyRenderer<Wolf>{
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "wolf.png");
-    private static final ResourceLocation HUSKY = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "wolf_husky.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "wolf.png");
+    private static final Identifier HUSKY = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "wolf_husky.png");
 
     protected WolfRenderer(EntityRendererProvider.Context context) {
         super(context);

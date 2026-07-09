@@ -6,11 +6,11 @@ import memopemo.pooltoys.Test;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.state.CameraRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 //if creating a new one just rename everything "dragon" in the new file to your new entity.
 public class TestRenderer extends BasePooltoyRenderer<Test>{
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "dragon.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "dragon.png");
 
     protected TestRenderer(EntityRendererProvider.Context context) {
         super(context);

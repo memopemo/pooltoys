@@ -7,12 +7,12 @@ import memopemo.pooltoys.Pooltoys;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.state.CameraRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 //if creating a new one just rename everything "fox" in the new file to your new entity.
 public class FoxRenderer extends BasePooltoyRenderer<Fox>{
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "fox.png");
-    private static final ResourceLocation MEMOPEMO = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "fox_memo.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "fox.png");
+    private static final Identifier MEMOPEMO = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "fox_memo.png");
 
     protected FoxRenderer(EntityRendererProvider.Context context) {
         super(context);

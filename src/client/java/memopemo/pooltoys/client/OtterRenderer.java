@@ -6,12 +6,12 @@ import memopemo.pooltoys.Pooltoys;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.state.CameraRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class OtterRenderer extends BasePooltoyRenderer<Otter>{
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "otter.png");
-    private static final ResourceLocation JAZZ = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "otter_jazz.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "otter.png");
+    private static final Identifier JAZZ = Identifier.fromNamespaceAndPath(Pooltoys.MOD_ID, "otter_jazz.png");
 
     protected OtterRenderer(EntityRendererProvider.Context context) {
         super(context);
