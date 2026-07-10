@@ -4,7 +4,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.vehicle.AbstractBoat;
+//import net.minecraft.world.entity.vehicle.AbstractBoat;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,8 +27,8 @@ public class ExampleClientMixin extends AbstractClientPlayer {
 		Entity vehicle = localPlayer.getControlledVehicle();
 		if (vehicle instanceof Pooltoy pooltoy) 
 		{
-			pooltoy.setInput(localPlayer.input.keyPresses.left(), localPlayer.input.keyPresses.right(),
-					localPlayer.input.keyPresses.forward(), localPlayer.input.keyPresses.backward());
+			pooltoy.setInput(localPlayer.input.left, localPlayer.input.right,
+					localPlayer.input.up, localPlayer.input.down);
 		}
 	}
 }

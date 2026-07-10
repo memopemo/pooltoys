@@ -1,5 +1,8 @@
 package memopemo.pooltoys.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import memopemo.pooltoys.Tanuki;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -8,7 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class TanukiModel extends BasePooltoyModel {
+public class TanukiModel extends BasePooltoyModel<Tanuki> {
 	
     //paste the model part definitions here like this one:
 	private final ModelPart body;
@@ -70,13 +73,23 @@ public class TanukiModel extends BasePooltoyModel {
 		return LayerDefinition.create(meshDefinition, 256, 256);
 	}
 
-	@Override
-	public void setupAnim(PooltoyRenderState ptRenderState) {
-		super.setupAnim(ptRenderState);
-		if(ptRenderState.hasSomeoneSitting)
+//	@Override
+//	public void setupAnim(PooltoyRenderState ptRenderState) {
+//		super.setupAnim(ptRenderState);
+//		if(ptRenderState.hasSomeoneSitting)
+//			bone1.xRot = -0.5F;
+//		else
+//			bone1.xRot = -0.3054F;
+//	}
+	public void setupAnim(Tanuki t, float f, float g, float h, float i, float j){
+		if(t.hasControllingPassenger())
 			bone1.xRot = -0.5F;
 		else
 			bone1.xRot = -0.3054F;
+	}
+	@Override
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+		getTexturedModelData().bakeRoot().render(poseStack, vertexConsumer, i, j , f,g,h,k);
 	}
 
 }

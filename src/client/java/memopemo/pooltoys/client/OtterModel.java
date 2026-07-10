@@ -1,5 +1,8 @@
 package memopemo.pooltoys.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import memopemo.pooltoys.Otter;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -8,7 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class OtterModel extends BasePooltoyModel {
+public class OtterModel extends BasePooltoyModel<Otter> {
 	
 	public OtterModel(ModelPart root) {
 		super(root);
@@ -52,6 +55,10 @@ public class OtterModel extends BasePooltoyModel {
 
         //replace '512' with size of your texture.
 		return LayerDefinition.create(meshDefinition, 128, 128);
+	}
+	@Override
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+		getTexturedModelData().bakeRoot().render(poseStack, vertexConsumer, i, j , f,g,h,k);
 	}
 
 }

@@ -1,5 +1,8 @@
 package memopemo.pooltoys.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import memopemo.pooltoys.Dragon;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -8,7 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class DragonModel extends BasePooltoyModel {
+public class DragonModel extends BasePooltoyModel<Dragon> {
 	public DragonModel(ModelPart root) {
 		super(root);
 		root.getChild("body");
@@ -55,5 +58,10 @@ public class DragonModel extends BasePooltoyModel {
 
 		return LayerDefinition.create(meshDefinition, 512, 512);
 	}
+	@Override
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+		getTexturedModelData().bakeRoot().render(poseStack, vertexConsumer, i, j , f,g,h,k);
+	}
+
 
 }

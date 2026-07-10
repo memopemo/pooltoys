@@ -1,14 +1,18 @@
 package memopemo.pooltoys;
 
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Leashable;
-import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ByIdMap;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.DismountHelper;
-import net.minecraft.world.entity.vehicle.VehicleEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import com.google.common.collect.Lists;
 import com.google.common.collect.UnmodifiableIterator;
@@ -29,21 +33,16 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.world.entity.InterpolationHandler;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.WaterlilyBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -51,12 +50,14 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class Pooltoy extends VehicleEntity implements Leashable {
+public class Pooltoy extends Entity {
 
+   private static final EntityDataAccessor<Integer> DATA_ID_HURT;
+   private static final EntityDataAccessor<Integer> DATA_ID_HURTDIR;
+   private static final EntityDataAccessor<Float> DATA_ID_DAMAGE;
    private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE;
    private float paddling = 0;
    private float deltaRotation;
-   private final InterpolationHandler interpolation = new InterpolationHandler(this, 3);
    private boolean inputLeft;
    private boolean inputRight;
    private boolean inputUp;
@@ -70,8 +71,12 @@ public class Pooltoy extends VehicleEntity implements Leashable {
    private float bubbleAngleO;
    private int hasBumped;
    private int moveTimer;
-   @Nullable
-   private Leashable.LeashData leashData;
+   private int lerpSteps;
+   private double lerpX;
+   private double lerpY;
+   private double lerpZ;
+   private double lerpYRot;
+   private double lerpXRot;
    private final Supplier<Item> dropItem;
 
    public Pooltoy(EntityType<? extends Pooltoy> entityType, Level level, Supplier<Item> supplier) {
@@ -87,15 +92,16 @@ public class Pooltoy extends VehicleEntity implements Leashable {
       this.zo = f;
       bounce();
    }
-   
 
    protected Entity.MovementEmission getMovementEmission() {
       return MovementEmission.EVENTS;
    }
 
-   protected void defineSynchedData(SynchedEntityData.Builder builder) {
-      builder.define(DATA_ID_PADDLE, false);
-      super.defineSynchedData(builder);
+   protected void defineSynchedData() {
+      this.entityData.define(DATA_ID_HURT, 0);
+      this.entityData.define(DATA_ID_HURTDIR, 1);
+      this.entityData.define(DATA_ID_DAMAGE, 0.0F);
+      this.entityData.define(DATA_ID_PADDLE, false);
    }
 
    public boolean canCollideWith(Entity entity) {
@@ -103,10 +109,10 @@ public class Pooltoy extends VehicleEntity implements Leashable {
    }
 
    public static boolean canVehicleCollide(Entity entity, Entity entity2) {
-      return (entity2.canBeCollidedWith(entity) || entity2.isPushable()) && !entity.isPassengerOfSameVehicle(entity2);
+      return (entity2.canBeCollidedWith() || entity2.isPushable()) && !entity.isPassengerOfSameVehicle(entity2);
    }
 
-   public boolean canBeCollidedWith(@Nullable Entity entity) {
+   public boolean canBeCollidedWith() {
       return true;
    }
 
@@ -117,6 +123,11 @@ public class Pooltoy extends VehicleEntity implements Leashable {
    public Vec3 getRelativePortalPosition(Direction.Axis axis, BlockUtil.FoundRectangle foundRectangle) {
       return LivingEntity
             .resetForwardDirectionOfRelativePortalPosition(super.getRelativePortalPosition(axis, foundRectangle));
+   }
+
+   public double getPassengersRidingOffset()
+   {
+      return rideHeight(null);
    }
 
    protected double rideHeight(EntityDimensions entityDimensions) {
@@ -149,7 +160,7 @@ public class Pooltoy extends VehicleEntity implements Leashable {
          bounce();
          hasBumped = 10;
       }
-      if (entity instanceof Pooltoy || entity instanceof AbstractBoat) {
+      if (entity instanceof Pooltoy || entity instanceof Boat) {
          if (entity.getBoundingBox().minY < this.getBoundingBox().maxY) {
             super.push(entity);
          }
@@ -168,11 +179,34 @@ public class Pooltoy extends VehicleEntity implements Leashable {
       this.setDamage(this.getDamage() * 11.0F);
    }
 
-   public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float f)
+   public boolean hurt(DamageSource damageSource, float f)
    {
       playBumpSound();
-      super.hurtServer(serverLevel, damageSource, f);
-      return true;
+      if (this.isInvulnerableTo(damageSource)) {
+         return false;
+      } else if (!this.level().isClientSide && !this.isRemoved()) {
+         this.setHurtDir(-this.getHurtDir());
+         this.setHurtTime(10);
+         this.setDamage(this.getDamage() + f * 10.0F);
+         this.markHurt();
+         this.gameEvent(GameEvent.ENTITY_DAMAGE, damageSource.getEntity());
+         boolean bl = damageSource.getEntity() instanceof Player && ((Player)damageSource.getEntity()).getAbilities().instabuild;
+         if (bl || this.getDamage() > 40.0F) {
+            if (!bl && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+               this.destroy(damageSource);
+            }
+
+            this.discard();
+         }
+
+         return true;
+      } else {
+         return true;
+      }
+   }
+
+   protected void destroy(DamageSource damageSource) {
+      this.spawnAtLocation(this.getDropItem());
    }
 
    private void bounce()
@@ -184,15 +218,20 @@ public class Pooltoy extends VehicleEntity implements Leashable {
    }
    private void playBumpSound()
    {
-      this.level().playSound((Entity)null, this.getX(), this.getY(), this.getZ(), Pooltoys.BOUNCE, this.getSoundSource(), 1F, this.getRandom().triangle(0.6f, 1.5f));
+      this.level().playSound((Player) null, this.getX(), this.getY(), this.getZ(), Pooltoys.BOUNCE, this.getSoundSource(), 1F, (float) this.random.triangle(0.6D, (double) 1.5f));
    }
 
    public boolean isPickable() {
       return !this.isRemoved();
    }
 
-   public InterpolationHandler getInterpolation() {
-      return this.interpolation;
+   public void lerpTo(double d, double e, double f, float g, float h, int i, boolean bl) {
+      this.lerpX = d;
+      this.lerpY = e;
+      this.lerpZ = f;
+      this.lerpYRot = (double)g;
+      this.lerpXRot = (double)h;
+      this.lerpSteps = 10;
    }
 
    public Direction getMotionDirection() {
@@ -212,8 +251,8 @@ public class Pooltoy extends VehicleEntity implements Leashable {
       }
 
       super.tick();
-      this.interpolation.interpolate();
-      if (this.isLocalInstanceAuthoritative()) {
+      this.tickLerp();
+      if (this.isControlledByLocalInstance()) {
          if (!(this.getFirstPassenger() instanceof Player)) {
             this.setPaddleState(false);
          }
@@ -228,9 +267,6 @@ public class Pooltoy extends VehicleEntity implements Leashable {
          this.setDeltaMovement(Vec3.ZERO);
       }
 
-      this.applyEffectsFromBlocks();
-      this.applyEffectsFromBlocks();
-
       //TODO: Figure out why this wont play litterally anything.
       if (this.getPaddleState()) {
          if (!this.isSilent() && (double)(this.paddling % ((float)Math.PI * 2F)) <= (double)((float)Math.PI / 4F) && (double)((this.paddling + ((float)Math.PI / 8F)) % ((float)Math.PI * 2F)) >= (double)((float)Math.PI / 4F)) {
@@ -238,7 +274,7 @@ public class Pooltoy extends VehicleEntity implements Leashable {
             SoundEvent soundEvent = this.getPaddleSound();
             if (soundEvent != null) {
               
-               this.level().playSound((Entity)null, this.getX(), this.getY(), this.getZ(), Pooltoys.BOUNCE, this.getSoundSource(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
+               this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), Pooltoys.BOUNCE, this.getSoundSource(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
                Pooltoys.LOGGER.info("Played? ...No? Figures. Figures getting this thing to peep sucks ass and i hate it and frick you");
             }
          }
@@ -260,7 +296,7 @@ public class Pooltoy extends VehicleEntity implements Leashable {
             if (!entity.hasPassenger(this)) {
                if (bl && this.getPassengers().size() < this.getMaxPassengers() && !entity.isPassenger()
                      && this.hasEnoughSpaceFor(entity) && entity instanceof LivingEntity
-                     && !entity.getType().is(EntityTypeTags.CANNOT_BE_PUSHED_ONTO_BOATS)) {
+                     && !(entity instanceof WaterAnimal) && !(entity instanceof Player)) {
                   entity.startRiding(this);
                } else {
                   this.push(entity);
@@ -273,6 +309,24 @@ public class Pooltoy extends VehicleEntity implements Leashable {
          hasBumped -= 1;
       }
 
+   }
+   private void tickLerp() {
+      if (this.isControlledByLocalInstance()) {
+         this.lerpSteps = 0;
+         this.syncPacketPositionCodec(this.getX(), this.getY(), this.getZ());
+      }
+
+      if (this.lerpSteps > 0) {
+         double d = this.getX() + (this.lerpX - this.getX()) / (double)this.lerpSteps;
+         double e = this.getY() + (this.lerpY - this.getY()) / (double)this.lerpSteps;
+         double f = this.getZ() + (this.lerpZ - this.getZ()) / (double)this.lerpSteps;
+         double g = Mth.wrapDegrees(this.lerpYRot - (double)this.getYRot());
+         this.setYRot(this.getYRot() + (float)g / (float)this.lerpSteps);
+         this.setXRot(this.getXRot() + (float)(this.lerpXRot - (double)this.getXRot()) / (float)this.lerpSteps);
+         --this.lerpSteps;
+         this.setPos(d, e, f);
+         this.setRot(this.getYRot(), this.getXRot());
+      }
    }
 
    @Nullable
@@ -294,25 +348,8 @@ public class Pooltoy extends VehicleEntity implements Leashable {
       return var10000;
    }
 
-   @Nullable
-   public Leashable.LeashData getLeashData() {
-      return this.leashData;
-   }
-
-   public void setLeashData(@Nullable Leashable.LeashData leashData) {
-      this.leashData = leashData;
-   }
-
    public Vec3 getLeashOffset() {
       return new Vec3((double) 0.0F, (double) (0.88F * this.getBbHeight()), (double) (0.64F * this.getBbWidth()));
-   }
-
-   public boolean supportQuadLeash() {
-      return true;
-   }
-
-   public Vec3[] getQuadLeashOffsets() {
-      return Leashable.createQuadLeashOffsets(this, (double) 0.0F, 0.64, 0.382, 0.88);
    }
 
    private Status getStatus() {
@@ -391,7 +428,7 @@ public class Pooltoy extends VehicleEntity implements Leashable {
                      mutableBlockPos.set(p, s, q);
                      BlockState blockState = this.level().getBlockState(mutableBlockPos);
                      if (!(blockState.getBlock() instanceof WaterlilyBlock) && Shapes.joinIsNotEmpty(
-                           blockState.getCollisionShape(this.level(), mutableBlockPos).move(mutableBlockPos),
+                           blockState.getCollisionShape(this.level(), mutableBlockPos).move((double)p, (double)s, (double)q),
                            voxelShape, BooleanOp.AND)) {
                         f += blockState.getBlock().getFriction();
                         ++o;
@@ -472,7 +509,7 @@ public class Pooltoy extends VehicleEntity implements Leashable {
    }
 
    private void floatBoat() {
-      double gravityApplication = -this.getGravity();
+      double gravityApplication = -0.04F;
       double floatAmount = (double) 0.0F;
       float resultingFriction = 0.05F;
       if (this.oldStatus == Pooltoy.Status.IN_AIR && this.status != Pooltoy.Status.IN_AIR
@@ -553,7 +590,24 @@ public class Pooltoy extends VehicleEntity implements Leashable {
 
    protected void positionRider(Entity entity, Entity.MoveFunction moveFunction) {
       super.positionRider(entity, moveFunction);
-      if (!entity.getType().is(EntityTypeTags.CAN_TURN_IN_BOATS)) {
+      if (this.hasPassenger(entity)) {
+         float f = this.getSinglePassengerXOffset();
+         float g = (float)((this.isRemoved() ? (double)0.01F : this.getPassengersRidingOffset()) + entity.getMyRidingOffset());
+         if (this.getPassengers().size() > 1) {
+            int i = this.getPassengers().indexOf(entity);
+            if (i == 0) {
+               f = 0.2F;
+            } else {
+               f = -0.6F;
+            }
+
+            if (entity instanceof Animal) {
+               f += 0.2F;
+            }
+         }
+
+         Vec3 vec3 = (new Vec3((double)f, (double)0.0F, (double)0.0F)).yRot(-this.getYRot() * ((float)Math.PI / 180F) - ((float)Math.PI / 2F));
+         moveFunction.accept(entity, this.getX() + vec3.x, this.getY() + (double)g, this.getZ() + vec3.z);
          entity.setYRot(entity.getYRot() + this.deltaRotation);
          entity.setYHeadRot(entity.getYHeadRot() + this.deltaRotation);
          this.clampRotation(entity);
@@ -615,12 +669,10 @@ public class Pooltoy extends VehicleEntity implements Leashable {
       this.clampRotation(entity);
    }
 
-   protected void addAdditionalSaveData(ValueOutput valueOutput) {
-      this.writeLeashData(valueOutput, this.leashData);
+   protected void addAdditionalSaveData(CompoundTag compoundTag) {
    }
 
-   protected void readAdditionalSaveData(ValueInput valueInput) {
-      this.readLeashData(valueInput);
+   protected void readAdditionalSaveData(CompoundTag compoundTag) {
    }
 
    public InteractionResult interact(Player player, InteractionHand interactionHand) {
@@ -632,14 +684,6 @@ public class Pooltoy extends VehicleEntity implements Leashable {
                || !this.level().isClientSide() && !player.startRiding(this) ? InteractionResult.PASS
                      : InteractionResult.SUCCESS);
       }
-   }
-
-   public void remove(Entity.RemovalReason removalReason) {
-      if (!this.level().isClientSide() && removalReason.shouldDestroy() && this.isLeashed()) {
-         this.dropLeash();
-      }
-
-      super.remove(removalReason);
    }
 
    protected void checkFallDamage(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
@@ -662,10 +706,28 @@ public class Pooltoy extends VehicleEntity implements Leashable {
    public boolean getPaddleState() {
       return (Boolean)this.entityData.get(DATA_ID_PADDLE) && this.getControllingPassenger() != null;
    }
+   public void setDamage(float f) {
+      this.entityData.set(DATA_ID_DAMAGE, f);
+   }
 
+   public float getDamage() {
+      return (Float)this.entityData.get(DATA_ID_DAMAGE);
+   }
 
-   public float getBubbleAngle(float f) {
-      return Mth.lerp(f, this.bubbleAngleO, this.bubbleAngle);
+   public void setHurtTime(int i) {
+      this.entityData.set(DATA_ID_HURT, i);
+   }
+
+   public int getHurtTime() {
+      return (Integer)this.entityData.get(DATA_ID_HURT);
+   }
+
+   public void setHurtDir(int i) {
+      this.entityData.set(DATA_ID_HURTDIR, i);
+   }
+
+   public int getHurtDir() {
+      return (Integer)this.entityData.get(DATA_ID_HURTDIR);
    }
 
    protected boolean canAddPassenger(Entity entity) {
@@ -701,16 +763,22 @@ public class Pooltoy extends VehicleEntity implements Leashable {
       return this.status == Pooltoy.Status.UNDER_WATER || this.status == Pooltoy.Status.UNDER_FLOWING_WATER;
    }
 
-   protected final Item getDropItem() {
-      return (Item) this.dropItem.get();
+   protected final Item getDropItem()
+   {
+      return this.dropItem.get();
    }
 
    public final ItemStack getPickResult() {
-      return new ItemStack((ItemLike) this.dropItem.get());
+      return new ItemStack(this.getDropItem());
    }
+
    static{
+      DATA_ID_HURT = SynchedEntityData.defineId(Pooltoy.class, EntityDataSerializers.INT);
+      DATA_ID_HURTDIR = SynchedEntityData.defineId(Pooltoy.class, EntityDataSerializers.INT);
+      DATA_ID_DAMAGE = SynchedEntityData.defineId(Pooltoy.class, EntityDataSerializers.FLOAT);
       DATA_ID_PADDLE = SynchedEntityData.defineId(Pooltoy.class, EntityDataSerializers.BOOLEAN);
    }
+
 
    public static enum Status {
       IN_WATER,
@@ -720,6 +788,51 @@ public class Pooltoy extends VehicleEntity implements Leashable {
       IN_AIR;
 
       private Status() {
+      }
+   }
+   public static enum Type implements StringRepresentable {
+      OAK(Blocks.OAK_PLANKS, "oak"),
+      SPRUCE(Blocks.SPRUCE_PLANKS, "spruce"),
+      BIRCH(Blocks.BIRCH_PLANKS, "birch"),
+      JUNGLE(Blocks.JUNGLE_PLANKS, "jungle"),
+      ACACIA(Blocks.ACACIA_PLANKS, "acacia"),
+      CHERRY(Blocks.CHERRY_PLANKS, "cherry"),
+      DARK_OAK(Blocks.DARK_OAK_PLANKS, "dark_oak"),
+      MANGROVE(Blocks.MANGROVE_PLANKS, "mangrove"),
+      BAMBOO(Blocks.BAMBOO_PLANKS, "bamboo");
+
+      private final String name;
+      private final Block planks;
+      public static final StringRepresentable.EnumCodec<Type> CODEC = StringRepresentable.fromEnum(Type::values);
+      private static final IntFunction<Type> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
+
+      private Type(Block block, String string2) {
+         this.name = string2;
+         this.planks = block;
+      }
+
+      public String getSerializedName() {
+         return this.name;
+      }
+
+      public String getName() {
+         return this.name;
+      }
+
+      public Block getPlanks() {
+         return this.planks;
+      }
+
+      public String toString() {
+         return this.name;
+      }
+
+      public static Pooltoy.Type byId(int i) {
+         return (Pooltoy.Type)BY_ID.apply(i);
+      }
+
+      public static Pooltoy.Type byName(String string) {
+         return (Pooltoy.Type)CODEC.byName(string, OAK);
       }
    }
 }

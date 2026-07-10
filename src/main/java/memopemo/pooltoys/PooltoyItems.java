@@ -16,10 +16,12 @@ import net.minecraft.core.Registry;
 public class PooltoyItems {
     public static <T extends Item> T register(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings) {
 		// Create the item key.
-		ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, name));
+		ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, new ResourceLocation(Pooltoys.MOD_ID, name));
 
 		// Create the item instance.
-		T item = itemFactory.apply(settings.setId(itemKey));
+		//T item = itemFactory.apply(settings.setId(itemKey));
+        //may not work
+        T item = itemFactory.apply(settings);
 
 		// Register the item.
 		Registry.register(BuiltInRegistries.ITEM, itemKey, item);

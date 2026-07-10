@@ -1,4 +1,7 @@
 package memopemo.pooltoys.client;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import memopemo.pooltoys.Orca;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -8,7 +11,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
 
-public class OrcaModel extends BasePooltoyModel {
+public class OrcaModel extends BasePooltoyModel<Orca> {
 	private final ModelPart body;
 	private final ModelPart tail1;
 	private final ModelPart tail2;
@@ -46,6 +49,10 @@ public class OrcaModel extends BasePooltoyModel {
 		PartDefinition Rfin = body.addOrReplaceChild("Rfin", CubeListBuilder.create().texOffs(34, 48).addBox(-8.0F, -2.0F, -9.0F, 8.0F, 5.0F, 16.0F, new CubeDeformation(0.0F)), PartPose.offset(-8.0F, -3.0F, -13.0F));
        
 		return LayerDefinition.create(meshDefinition, 128, 128);
+	}
+	@Override
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+		getTexturedModelData().bakeRoot().render(poseStack, vertexConsumer, i, j , f,g,h,k);
 	}
 }
 

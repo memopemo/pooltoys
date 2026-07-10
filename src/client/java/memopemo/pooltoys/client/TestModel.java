@@ -1,5 +1,8 @@
 package memopemo.pooltoys.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import memopemo.pooltoys.Test;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -8,7 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class TestModel extends BasePooltoyModel {
+public class TestModel extends BasePooltoyModel<Test> {
 	// This layer location should be baked with EntityRendererProvider.Context in
 	// the entity renderer and passed into this model's constructor
 
@@ -102,6 +105,10 @@ public class TestModel extends BasePooltoyModel {
 				PartPose.offsetAndRotation(0.0F, 21.8473F, -21.013F, -0.9163F, 0.0F, 0.0F));
 
 		return LayerDefinition.create(meshDefinition, 512, 512);
+	}
+	@Override
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+		getTexturedModelData().bakeRoot().render(poseStack, vertexConsumer, i, j , f,g,h,k);
 	}
 
 }
