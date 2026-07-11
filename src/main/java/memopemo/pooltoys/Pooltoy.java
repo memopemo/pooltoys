@@ -51,7 +51,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class Pooltoy extends Entity {
-
    private static final EntityDataAccessor<Integer> DATA_ID_HURT;
    private static final EntityDataAccessor<Integer> DATA_ID_HURTDIR;
    private static final EntityDataAccessor<Float> DATA_ID_DAMAGE;
@@ -127,31 +126,13 @@ public class Pooltoy extends Entity {
 
    public double getPassengersRidingOffset()
    {
-      return rideHeight(null);
+      return rideHeight(null)-0.25f;
    }
 
    protected double rideHeight(EntityDimensions entityDimensions) {
       return 1f;
    };
 
-   protected Vec3 getPassengerAttachmentPoint(Entity entity, EntityDimensions entityDimensions, float f) {
-      float g = this.getSinglePassengerXOffset();
-      if (this.getPassengers().size() > 1) {
-         int i = this.getPassengers().indexOf(entity);
-         if (i == 0) {
-            g = 0.2F;
-         } else {
-            g = -0.6F;
-         }
-
-         if (entity instanceof Animal) {
-            g += 0.2F;
-         }
-      }
-
-      return (new Vec3((double) 0.0F, this.rideHeight(entityDimensions), (double) g))
-            .yRot(-this.getYRot() * ((float) Math.PI / 180F));
-   }
 
    public void push(Entity entity) {
       //Play bouncing animation
