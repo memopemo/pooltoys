@@ -94,10 +94,10 @@ public class Pooltoys implements ModInitializer {
 
 
     private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
-		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, new ResourceLocation(Pooltoys.MOD_ID, name));
+		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE,ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, name));
 		return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key.toString()));
 	}
-	public static final SoundEvent BOUNCE = Registry.register(BuiltInRegistries.SOUND_EVENT, new ResourceLocation(MOD_ID, "bounce"), SoundEvent.createVariableRangeEvent(new ResourceLocation(MOD_ID, "bounce")));
+	public static final SoundEvent BOUNCE = Registry.register(BuiltInRegistries.SOUND_EVENT, ResourceLocation.fromNamespaceAndPath(MOD_ID, "bounce"), SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, "bounce")));
 
 	@Override
 	public void onInitialize() {

@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
 public class RaccoonRenderer extends BasePooltoyRenderer<Raccoon> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "raccoon.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "raccoon.png");
 
     protected RaccoonRenderer(EntityRendererProvider.Context context) {
         super(context);

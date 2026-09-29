@@ -9,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 
 public class OtterRenderer extends BasePooltoyRenderer<Otter>{
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "otter.png");
-    private static final ResourceLocation JAZZ = new ResourceLocation(Pooltoys.MOD_ID, "otter_jazz.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "otter.png");
+    private static final ResourceLocation JAZZ = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "otter_jazz.png");
 
     protected OtterRenderer(EntityRendererProvider.Context context) {
         super(context);

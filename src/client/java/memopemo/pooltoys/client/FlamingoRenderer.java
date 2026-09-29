@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class FlamingoRenderer extends BasePooltoyRenderer<Flamingo>{
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "flamingo.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "flamingo.png");
 
     protected FlamingoRenderer(EntityRendererProvider.Context context) {
         super(context);

@@ -21,7 +21,7 @@ public class PooltoysModelLayers {
 	//Add by copying and renaming like so
 
 	private static ModelLayerLocation createMain(String name) {
-		return new ModelLayerLocation(new ResourceLocation(Pooltoys.MOD_ID, name), "main");
+		return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, name), "main");
 	}
 
 	public static void registerModelLayers() {

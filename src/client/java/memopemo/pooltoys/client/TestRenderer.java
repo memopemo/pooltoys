@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 
 //if creating a new one just rename everything "dragon" in the new file to your new entity.
 public class TestRenderer extends BasePooltoyRenderer<Test>{
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "dragon.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "dragon.png");
 
     protected TestRenderer(EntityRendererProvider.Context context) {
         super(context);

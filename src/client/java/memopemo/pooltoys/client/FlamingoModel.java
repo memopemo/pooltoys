@@ -51,8 +51,8 @@ public class FlamingoModel extends BasePooltoyModel<Flamingo> {
 		return LayerDefinition.create(meshDefinition, 256, 256);
 	}
 	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
-		getTexturedModelData().bakeRoot().render(poseStack, vertexConsumer, i, j , f,g,h,k);
+	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, int f) {
+		getTexturedModelData().bakeRoot().render(poseStack, vertexConsumer, i, j);
 	}
 
 }

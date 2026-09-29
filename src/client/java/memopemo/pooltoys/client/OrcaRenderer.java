@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
 public class OrcaRenderer extends BasePooltoyRenderer<Orca>{
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "orca.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "orca.png");
 
     protected OrcaRenderer(EntityRendererProvider.Context context) {
         super(context);

@@ -10,8 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 
 //if creating a new one just rename everything "fox" in the new file to your new entity.
 public class FoxRenderer extends BasePooltoyRenderer<Fox>{
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "fox.png");
-    private static final ResourceLocation MEMOPEMO = new ResourceLocation(Pooltoys.MOD_ID, "fox_memo.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "fox.png");
+    private static final ResourceLocation MEMOPEMO = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "fox_memo.png");
 
     protected FoxRenderer(EntityRendererProvider.Context context) {
         super(context);

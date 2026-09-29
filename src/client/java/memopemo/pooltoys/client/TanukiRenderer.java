@@ -10,10 +10,10 @@ import net.minecraft.resources.ResourceLocation;
 
 public class TanukiRenderer extends BasePooltoyRenderer<Tanuki>{
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "tanuki_boba.png");
-    private static final ResourceLocation RED = new ResourceLocation(Pooltoys.MOD_ID, "tanuki_red_panda.png");
-    private static final ResourceLocation GREEN = new ResourceLocation(Pooltoys.MOD_ID, "tanuki_matcha.png");
-    private static final ResourceLocation PURPLE = new ResourceLocation(Pooltoys.MOD_ID, "tanuki_taro.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_boba.png");
+    private static final ResourceLocation RED = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_red_panda.png");
+    private static final ResourceLocation GREEN = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_matcha.png");
+    private static final ResourceLocation PURPLE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "tanuki_taro.png");
 
     protected TanukiRenderer(EntityRendererProvider.Context context) {
         super(context);

@@ -17,7 +17,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 
 public class DragonRenderer extends BasePooltoyRenderer<Dragon>{
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "dragon.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "dragon.png");
 
     protected DragonRenderer(EntityRendererProvider.Context context) {
         super(context);

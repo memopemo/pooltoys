@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class SharkRenderer extends BasePooltoyRenderer<Shark>{
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "shark.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "shark.png");
 
     protected SharkRenderer(EntityRendererProvider.Context context) {
         super(context);

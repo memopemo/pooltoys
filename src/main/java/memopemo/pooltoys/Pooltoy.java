@@ -92,15 +92,15 @@ public class Pooltoy extends Entity {
       bounce();
    }
 
-   protected Entity.MovementEmission getMovementEmission() {
+   protected MovementEmission getMovementEmission() {
       return MovementEmission.EVENTS;
    }
 
-   protected void defineSynchedData() {
-      this.entityData.define(DATA_ID_HURT, 0);
-      this.entityData.define(DATA_ID_HURTDIR, 1);
-      this.entityData.define(DATA_ID_DAMAGE, 0.0F);
-      this.entityData.define(DATA_ID_PADDLE, false);
+   protected void defineSynchedData(SynchedEntityData.Builder builder) {
+      builder.define(DATA_ID_HURT, 0);
+      builder.define(DATA_ID_HURTDIR, 1);
+      builder.define(DATA_ID_DAMAGE, 0.0F);
+      builder.define(DATA_ID_PADDLE, false);
    }
 
    public boolean canCollideWith(Entity entity) {
@@ -339,14 +339,14 @@ public class Pooltoy extends Entity {
          this.waterLevel = this.getBoundingBox().maxY;
          return status;
       } else if (this.checkInWater()) {
-         return Pooltoy.Status.IN_WATER;
+         return Status.IN_WATER;
       } else {
          float f = this.getGroundFriction();
          if (f > 0.0F) {
             this.landFriction = f;
-            return Pooltoy.Status.ON_LAND;
+            return Status.ON_LAND;
          } else {
-            return Pooltoy.Status.IN_AIR;
+            return Status.IN_AIR;
          }
       }
    }
@@ -473,7 +473,7 @@ public class Pooltoy extends Entity {
                if (fluidState.is(FluidTags.WATER) && d < (double) ((float) mutableBlockPos.getY()
                      + fluidState.getHeight(this.level(), mutableBlockPos))) {
                   if (!fluidState.isSource()) {
-                     return Pooltoy.Status.UNDER_FLOWING_WATER;
+                     return Status.UNDER_FLOWING_WATER;
                   }
 
                   bl = true;
@@ -482,7 +482,7 @@ public class Pooltoy extends Entity {
          }
       }
 
-      return bl ? Pooltoy.Status.UNDER_WATER : null;
+      return bl ? Status.UNDER_WATER : null;
    }
 
    protected double getDefaultGravity() {
@@ -493,8 +493,8 @@ public class Pooltoy extends Entity {
       double gravityApplication = -0.04F;
       double floatAmount = (double) 0.0F;
       float resultingFriction = 0.05F;
-      if (this.oldStatus == Pooltoy.Status.IN_AIR && this.status != Pooltoy.Status.IN_AIR
-            && this.status != Pooltoy.Status.ON_LAND) {
+      if (this.oldStatus == Status.IN_AIR && this.status != Status.IN_AIR
+            && this.status != Status.ON_LAND) {
          this.waterLevel = this.getY((double) 1.0F);
          double g = (double) (this.getWaterLevelAbove() - this.getBbHeight()) + 0.101;
          if (this.level().noCollision(this,
@@ -504,20 +504,20 @@ public class Pooltoy extends Entity {
             this.lastYd = (double) 0.0F;
          }
 
-         this.status = Pooltoy.Status.IN_WATER;
+         this.status = Status.IN_WATER;
       } else {
-         if (this.status == Pooltoy.Status.IN_WATER) {
+         if (this.status == Status.IN_WATER) {
             floatAmount = (this.waterLevel+0.25F) - this.getY();
             resultingFriction = 0.9F;
-         } else if (this.status == Pooltoy.Status.UNDER_FLOWING_WATER) {
+         } else if (this.status == Status.UNDER_FLOWING_WATER) {
             floatAmount = (this.waterLevel+0.25F) - this.getY();
             resultingFriction = 0.9F;
-         } else if (this.status == Pooltoy.Status.UNDER_WATER) {
+         } else if (this.status == Status.UNDER_WATER) {
             floatAmount = (this.waterLevel+0.25F) - this.getY();
             resultingFriction = 0.9F;
-         } else if (this.status == Pooltoy.Status.IN_AIR) {
+         } else if (this.status == Status.IN_AIR) {
             resultingFriction = 0.9F;
-         } else if (this.status == Pooltoy.Status.ON_LAND) {
+         } else if (this.status == Status.ON_LAND) {
             resultingFriction = this.landFriction;
          }
 
@@ -569,11 +569,11 @@ public class Pooltoy extends Entity {
       return entity.getBbWidth() < this.getBbWidth();
    }
 
-   protected void positionRider(Entity entity, Entity.MoveFunction moveFunction) {
+   protected void positionRider(Entity entity, MoveFunction moveFunction) {
       super.positionRider(entity, moveFunction);
       if (this.hasPassenger(entity)) {
          float f = this.getSinglePassengerXOffset();
-         float g = (float)((this.isRemoved() ? (double)0.01F : this.getPassengersRidingOffset()) + entity.getMyRidingOffset());
+         float g = (float)((this.isRemoved() ? (double)0.01F : this.getPassengersRidingOffset()) -0.5f);
          if (this.getPassengers().size() > 1) {
             int i = this.getPassengers().indexOf(entity);
             if (i == 0) {
@@ -741,7 +741,7 @@ public class Pooltoy extends Entity {
    }
 
    public boolean isUnderWater() {
-      return this.status == Pooltoy.Status.UNDER_WATER || this.status == Pooltoy.Status.UNDER_FLOWING_WATER;
+      return this.status == Status.UNDER_WATER || this.status == Status.UNDER_FLOWING_WATER;
    }
 
    protected final Item getDropItem()
@@ -784,7 +784,7 @@ public class Pooltoy extends Entity {
 
       private final String name;
       private final Block planks;
-      public static final StringRepresentable.EnumCodec<Type> CODEC = StringRepresentable.fromEnum(Type::values);
+      public static final EnumCodec<Type> CODEC = StringRepresentable.fromEnum(Type::values);
       private static final IntFunction<Type> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
 
       private Type(Block block, String string2) {
@@ -808,12 +808,12 @@ public class Pooltoy extends Entity {
          return this.name;
       }
 
-      public static Pooltoy.Type byId(int i) {
-         return (Pooltoy.Type)BY_ID.apply(i);
+      public static Type byId(int i) {
+         return (Type)BY_ID.apply(i);
       }
 
-      public static Pooltoy.Type byName(String string) {
-         return (Pooltoy.Type)CODEC.byName(string, OAK);
+      public static Type byName(String string) {
+         return (Type)CODEC.byName(string, OAK);
       }
    }
 }

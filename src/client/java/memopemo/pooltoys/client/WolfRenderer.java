@@ -11,8 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 
 public class WolfRenderer extends BasePooltoyRenderer<Wolf>{
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "wolf.png");
-    private static final ResourceLocation HUSKY = new ResourceLocation(Pooltoys.MOD_ID, "wolf_husky.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "wolf.png");
+    private static final ResourceLocation HUSKY = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "wolf_husky.png");
 
     protected WolfRenderer(EntityRendererProvider.Context context) {
         super(context);

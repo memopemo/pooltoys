@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class GatorRenderer extends BasePooltoyRenderer<Gator>{
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Pooltoys.MOD_ID, "gator.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Pooltoys.MOD_ID, "gator.png");
 
     protected GatorRenderer(EntityRendererProvider.Context context) {
         super(context);

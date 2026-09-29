@@ -68,7 +68,7 @@ public abstract class BasePooltoyRenderer<T extends Pooltoy> extends EntityRende
        poseStack.scale(-1.0F, -1.0F, 1.0F);
        model.setupAnim(pooltoy, tick, 0f,-0.1f, 0f, 0f);
        VertexConsumer vertexConsumer = mbSource.getBuffer(model.renderType(TEXTURE));
-       model.renderToBuffer(poseStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+       model.renderToBuffer(poseStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY, 1);
        poseStack.popPose();
        super.render(pooltoy, tilt, tick, poseStack, mbSource, i);
    }

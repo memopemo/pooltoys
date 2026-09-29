@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public class PooltoyItem extends Item {
    private final EntityType<? extends Pooltoy> entityType;
 
-   public PooltoyItem(EntityType<? extends Pooltoy> entityType, Item.Properties properties) {
+   public PooltoyItem(EntityType<? extends Pooltoy> entityType, Properties properties) {
       super(properties);
       this.entityType = entityType;
    }
